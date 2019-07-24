@@ -14,8 +14,8 @@ use Illuminate\Database\Schema\Blueprint;
 use UserFrosting\Sprinkle\Core\Database\Migration;
 
 /**
- * Account Identity Providers migration.
- * Manages user account identity provider information.
+ * Primary Identity Providers migration.
+ * Manages primary identity providers authentication information.
  * Version 4.4.0.
  *
  * See https://laravel.com/docs/5.8/migrations#tables
@@ -23,13 +23,12 @@ use UserFrosting\Sprinkle\Core\Database\Migration;
  * @author Archey Barrell
  * @author Amos Folz
  */
-class AccountIdentityProvidersTable extends Migration
+class PrimaryIdpsTable extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public static $dependencies = [
-        '\UserFrosting\Sprinkle\Account\Database\Migrations\v400\UsersTable',
     ];
 
     /**
@@ -37,19 +36,15 @@ class AccountIdentityProvidersTable extends Migration
      */
     public function up()
     {
-        if (!$this->schema->hasTable('account_identity_providers')) {
-            $this->schema->create('account_identity_providers', function (Blueprint $table) {
-                $table->increments('id');
-                $table->integer('user_id')->unsigned()->comment('The id of the user.');
-                $table->string('idp_type');
-                $table->string('idp_slug');
-                $table->json('options');
+        if (!$this->schema->hasTable('primary_idps')) {
+            $this->schema->create('primary_idps', function (Blueprint $table) {
+                $table->increments('id')
+                $table->string('slug')->unique();
                 $table->timestamps();
 
                 $table->engine = 'InnoDB';
                 $table->collation = 'utf8_unicode_ci';
                 $table->charset = 'utf8';
-                $table->foreign('user_id')->references('id')->on('users');
             });
         }
     }
@@ -59,6 +54,6 @@ class AccountIdentityProvidersTable extends Migration
      */
     public function down()
     {
-        $this->schema->drop('account_identity_providers');
+        $this->schema->drop('primary_idps');
     }
 }
