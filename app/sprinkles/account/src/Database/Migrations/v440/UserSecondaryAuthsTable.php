@@ -50,7 +50,7 @@ class UserSecondaryAuthsTable extends Migration
                 $table->collation = 'utf8_unicode_ci';
                 $table->charset = 'utf8';
                 $table->foreign('user_id')->references('id')->on('users');
-                $table->foreign('secondary_auths_id')->references('id')->on('external_idps');
+                $table->foreign('secondary_auths_id')->references('id')->on('secondary_auths');
             });
         }
     }

@@ -13,7 +13,7 @@ namespace UserFrosting\Sprinkle\Account\Controller;
 use UserFrosting\Sprinkle\Core\Controller\SimpleController;
 
 /**
- * Controller class for /account/auth/* URLs.  Handles account-related authentication.
+ * Controller class for /auth/* URLs.  Handles account-related authentication.
  *
  * @author Archey Barrell
  * @author Amos Folz
