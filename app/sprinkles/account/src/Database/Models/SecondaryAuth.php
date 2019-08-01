@@ -39,7 +39,7 @@ class SecondaryAuth extends Model
     public $timestamps = true;
 
     /**
-     * Lazily load a collection of Users which belong to this group.
+     * Lazily load a collection of Users which belong to this secondary authentication method.
      */
     public function users()
     {

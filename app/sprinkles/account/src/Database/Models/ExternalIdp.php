@@ -39,7 +39,7 @@ class ExternalIdp extends Model
     public $timestamps = true;
 
     /**
-     * Lazily load a collection of Users which belong to this group.
+     * Lazily load a collection of Users which belong to this external identity provider.
      */
     public function users()
     {

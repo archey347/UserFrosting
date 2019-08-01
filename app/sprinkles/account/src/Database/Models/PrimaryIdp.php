@@ -39,7 +39,7 @@ class PrimaryIdp extends Model
     public $timestamps = true;
 
     /**
-     * Lazily load a collection of Users which belong to this group.
+     * Lazily load a collection of Users which belong to this primary identity provider.
      */
     public function users()
     {
@@ -48,6 +48,6 @@ class PrimaryIdp extends Model
 
         return $this->belongsToMany($classMapper->getClassMapping('user')
                     ->withTimestamps()
-                    ->using('UserPrimaryIdp');
+                    ->using('UserPrimaryIdp'));
     }
 }

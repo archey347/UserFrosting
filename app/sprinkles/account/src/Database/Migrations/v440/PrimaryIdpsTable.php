@@ -38,7 +38,7 @@ class PrimaryIdpsTable extends Migration
     {
         if (!$this->schema->hasTable('primary_idps')) {
             $this->schema->create('primary_idps', function (Blueprint $table) {
-                $table->increments('id')
+                $table->increments('id');
                 $table->string('slug')->unique();
                 $table->timestamps();
 
