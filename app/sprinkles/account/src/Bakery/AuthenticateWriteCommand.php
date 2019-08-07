@@ -16,6 +16,7 @@ use UserFrosting\Sprinkle\Core\Twig\CacheHelper;
 use UserFrosting\System\Bakery\BaseCommand;
 use UserFrosting\Sprinkle\Account\Database\Models\PrimaryIdp;
 use UserFrosting\Sprinkle\Account\Database\Models\ExternalIdp;
+use UserFrosting\Sprinkle\Core\Facades\Debug;
 
 /**
  * ClearCache CLI Command.
@@ -53,41 +54,34 @@ class AuthenticateWriteCommand extends BaseCommand
                 print_r($secondary);
         */
 
-        $missing = [];
-
-        $exists = [];
+        $new = [];
 
         foreach ($primary as $key => $value) {
             if (!$this->checkPrimary($key)) {
                 $idp = new PrimaryIdp();
                 $idp->slug = $key;
                 $idp->save();
+                $new[] = $key;
             }
         }
+
+        Debug::debug(print_r($new, true));
 
         foreach ($external as $key => $value) {
             //      print_r($key);
             $test = $this->checkExternal($key);
-            var_export($test);
+            //      print_r($test);
         }
     }
 
     protected function checkPrimary(string $string)
     {
-        if (PrimaryIdp::where('slug', "$string")->first()) {
-            return true;
-        }
-
-        return false;
+        return PrimaryIdp::where('slug', "$string")->first();
     }
 
     protected function checkExternal(string $string)
     {
         return ExternalIdp::where('slug', "$string")->first();
-    }
-
-    protected function writePrimary(string $string)
-    {
     }
 
     /**
