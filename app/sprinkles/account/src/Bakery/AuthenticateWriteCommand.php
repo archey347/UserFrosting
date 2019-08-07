@@ -22,14 +22,14 @@ use UserFrosting\Sprinkle\Account\Database\Models\ExternalIdp;
  *
  * @author Alex Weissman (https://alexanderweissman.com)
  */
-class AuthenticatorWriteCommand extends BaseCommand
+class AuthenticateWriteCommand extends BaseCommand
 {
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('authenticator:write')
+        $this->setName('authenticate:write')
              ->setDescription('Writes system configuration files authenticator values into the authentication database tables.');
     }
 
@@ -53,26 +53,41 @@ class AuthenticatorWriteCommand extends BaseCommand
                 print_r($secondary);
         */
 
+        $missing = [];
+
+        $exists = [];
+
         foreach ($primary as $key => $value) {
-            $test = $this->checkExternal($key);
-            print_r($test);
+            if (!$this->checkPrimary($key)) {
+                $idp = new PrimaryIdp();
+                $idp->slug = $key;
+                $idp->save();
+            }
         }
 
         foreach ($external as $key => $value) {
             //      print_r($key);
             $test = $this->checkExternal($key);
-            print_r($test);
+            var_export($test);
         }
     }
 
     protected function checkPrimary(string $string)
     {
-        return PrimaryIdp::where('slug', "$string")->first();
+        if (PrimaryIdp::where('slug', "$string")->first()) {
+            return true;
+        }
+
+        return false;
     }
 
     protected function checkExternal(string $string)
     {
         return ExternalIdp::where('slug', "$string")->first();
+    }
+
+    protected function writePrimary(string $string)
+    {
     }
 
     /**
