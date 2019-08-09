@@ -38,7 +38,7 @@ class SecondaryAuthsTable extends Migration
     {
         if (!$this->schema->hasTable('secondary_auths')) {
             $this->schema->create('secondary_auths', function (Blueprint $table) {
-                $table->increments('id')
+                $table->increments('id');
                 $table->string('slug')->unique();
                 $table->timestamps();
 

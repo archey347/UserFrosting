@@ -39,7 +39,7 @@ class ExternalIdpsTable extends Migration
     {
         if (!$this->schema->hasTable('external_idps')) {
             $this->schema->create('external_idps', function (Blueprint $table) {
-                $table->increments('id')
+                $table->increments('id');
                 $table->string('slug')->unique();
                 $table->timestamps();
 
