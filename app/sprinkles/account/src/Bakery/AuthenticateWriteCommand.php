@@ -21,7 +21,8 @@ use UserFrosting\Sprinkle\Core\Facades\Debug;
 /**
  * ClearCache CLI Command.
  *
- * @author Alex Weissman (https://alexanderweissman.com)
+ * @author Archey Barrell
+ * @author Amos Folz
  */
 class AuthenticateWriteCommand extends BaseCommand
 {
@@ -54,18 +55,20 @@ class AuthenticateWriteCommand extends BaseCommand
                 print_r($secondary);
         */
 
-        $new = [];
+        $configurations = [];
 
         foreach ($primary as $key => $value) {
             if (!$this->checkPrimary($key)) {
                 $idp = new PrimaryIdp();
                 $idp->slug = $key;
                 $idp->save();
-                $new[] = $key;
+                $configurations['new'][] = $key;
+            } else {
+                $configurations['exists'][] = $key;
             }
         }
 
-        Debug::debug(print_r($new, true));
+        Debug::debug(print_r($configurations, true));
 
         foreach ($external as $key => $value) {
             //      print_r($key);
