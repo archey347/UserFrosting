@@ -8,19 +8,23 @@
  * @license   https://github.com/userfrosting/UserFrosting/blob/master/LICENSE.md (MIT License)
  */
 
-namespace UserFrosting\Sprinkle\Account\Controller;
-
-use UserFrosting\Sprinkle\Core\Controller\SimpleController;
+namespace UserFrosting\Sprinkle\Account\Database\Models\Interfaces;
 
 /**
- * Controller class for /auth/* URLs.  Handles account-related authentication.
+ * External Identity Provider interface.
  *
  * @author Archey Barrell
  * @author Amos Folz
  */
-class AuthenticationController extends SimpleController
+interface ExternalIdpInterface
 {
-    public function test(Request $request, Response $response, $args)
-    {
-    }
+    public function redirect();
+
+    public function verify($data);
+
+    public function getLoginBtnTemplatePath();
+
+    public function getApi();
+
+    public function createUser($rawUser);
 }

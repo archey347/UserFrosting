@@ -11,6 +11,8 @@
 use UserFrosting\Sprinkle\Core\Util\NoCache;
 
 $app->group('/account', function () {
+    $this->get('/test', 'UserFrosting\Sprinkle\Account\Controller\AuthenticationController:test');
+
     $this->get('/captcha', 'UserFrosting\Sprinkle\Account\Controller\AccountController:imageCaptcha');
 
     $this->get('/check-username', 'UserFrosting\Sprinkle\Account\Controller\AccountController:checkUsername');
