@@ -13,6 +13,3 @@ RewriteRule ^(LICENSE.txt|composer.lock|composer.json|\.htaccess|\.env)$ error [
 ## End - Security
 
 </IfModule>
-
-
-php_value memory_limit 1024M
