@@ -42,14 +42,13 @@ class AuthenticateStatusCommand extends BaseCommand
     {
         $this->io->title('Writing Authenticator Configuration Values');
 
-        $config = $this->ci->config;
+        $config = $this->ci->config['identity_providers'];
 
-        Debug::debug(print_r(get_class_methods($config), true));
+        $primaryCollection = $this->getPrimary();
 
-        $test = $config->has('identity_providers.primary.databases');
+        $externalCollection = $this->getExternal();
 
-        Debug::debug(print_r(get_class_methods($test), true));
-        Debug::debug(print_r($test, true));
+        Debug::debug(print_r($primaryCollection, true));
 
         $primary = $config['primary'];
 
@@ -57,41 +56,17 @@ class AuthenticateStatusCommand extends BaseCommand
 
         $secondary = $config['secondary'];
 
-        $primaryCollection = PrimaryIdp::all();
-
-        $externalCollection = ExternalIdp::all();
-        /*
-                Debug::debug(print_r($primaryCollection, true));
-                Debug::debug(print_r($externalCollection, true));
-        */
-        $configurations = [];
-
-        if (!(ExternalIdp::all())) {
-            print_r('it is not null');
-        }
+        $test = $primaryCollection->diff($external);
     }
 
-    protected function checkPrimary(string $string)
+    protected function getPrimary()
     {
-        $test = PrimaryIdp::where('slug', "$string")->get();
-        //  Debug::debug(print_r($test, true));
-
-        return $test;
+        return PrimaryIdp::all();
     }
 
-    protected function checkExternal(string $string)
+    protected function getExternal()
     {
-        $testing = ExternalIdp::where('slug', "$string")->get();
-
-        return $testing;
-    }
-
-    /**
-     * Read authentication configuration from configuration files.
-     */
-    protected function getConfigFromFiles()
-    {
-        $this->ci->cache->flush();
+        return ExternalIdp::all();
     }
 
     /**
