@@ -42,49 +42,48 @@ class AuthenticateStatusCommand extends BaseCommand
     {
         $this->io->title('Writing Authenticator Configuration Values');
 
-        $config = $this->ci->config['identity_providers'];
+        $config = $this->ci->config;
+
+        Debug::debug(print_r(get_class_methods($config), true));
+
+        $test = $config->has('identity_providers.primary.databases');
+
+        Debug::debug(print_r(get_class_methods($test), true));
+        Debug::debug(print_r($test, true));
 
         $primary = $config['primary'];
 
         $external = $config['external'];
 
         $secondary = $config['secondary'];
-        /*
-                print_r($primary);
-                print_r($external);
-                print_r($secondary);
-        */
 
+        $primaryCollection = PrimaryIdp::all();
+
+        $externalCollection = ExternalIdp::all();
+        /*
+                Debug::debug(print_r($primaryCollection, true));
+                Debug::debug(print_r($externalCollection, true));
+        */
         $configurations = [];
 
-        foreach ($primary as $key => $value) {
-            if (!$this->checkPrimary($key)) {
-                $idp = new PrimaryIdp();
-                $idp->slug = $key;
-                $idp->save();
-                $configurations['new'][] = $key;
-            } else {
-                $configurations['exists'][] = $key;
-            }
-        }
-
-        Debug::debug(print_r($configurations, true));
-
-        foreach ($external as $key => $value) {
-            //      print_r($key);
-            $test = $this->checkExternal($key);
-            //      print_r($test);
+        if (!(ExternalIdp::all())) {
+            print_r('it is not null');
         }
     }
 
     protected function checkPrimary(string $string)
     {
-        return PrimaryIdp::where('slug', "$string")->first();
+        $test = PrimaryIdp::where('slug', "$string")->get();
+        //  Debug::debug(print_r($test, true));
+
+        return $test;
     }
 
     protected function checkExternal(string $string)
     {
-        return ExternalIdp::where('slug', "$string")->first();
+        $testing = ExternalIdp::where('slug', "$string")->get();
+
+        return $testing;
     }
 
     /**
