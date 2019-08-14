@@ -45,10 +45,10 @@ class AuthenticateStatusCommand extends BaseCommand
         $config = $this->ci->config['identity_providers'];
 
         $primaryCollection = $this->getPrimary();
-
+        //    Debug::debug(print_r($primaryCollection, true));
         $externalCollection = $this->getExternal();
 
-        Debug::debug(print_r($primaryCollection, true));
+        //  Debug::debug(print_r($primaryCollection, true));
 
         $primary = $config['primary'];
 
@@ -56,7 +56,15 @@ class AuthenticateStatusCommand extends BaseCommand
 
         $secondary = $config['secondary'];
 
-        $test = $primaryCollection->diff($external);
+        $test = collect($primary)->map(function ($row) {
+            return (object) $row;
+        });
+
+        Debug::debug(print_r($test, true));
+
+        $test->each(function ($item) {
+            print_r($item->class_name);
+        });
     }
 
     protected function getPrimary()
