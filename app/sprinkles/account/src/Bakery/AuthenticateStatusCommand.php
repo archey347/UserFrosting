@@ -12,10 +12,8 @@ namespace UserFrosting\Sprinkle\Account\Bakery;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use UserFrosting\Sprinkle\Core\Twig\CacheHelper;
 use UserFrosting\System\Bakery\BaseCommand;
 use UserFrosting\Sprinkle\Account\Database\Models\PrimaryIdp;
-use UserFrosting\Sprinkle\Account\Database\Models\ExternalIdp;
 use UserFrosting\Sprinkle\Core\Facades\Debug;
 
 /**
@@ -40,62 +38,57 @@ class AuthenticateStatusCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->io->title('Writing Authenticator Configuration Values');
+        $this->io->title('Authenticator Configuration Status');
 
         $config = $this->ci->config['identity_providers'];
 
         $primaryCollection = $this->getPrimary();
-        //    Debug::debug(print_r($primaryCollection, true));
+
         $externalCollection = $this->getExternal();
 
-        //  Debug::debug(print_r($primaryCollection, true));
+        $test = $this->check();
+    }
 
-        $primary = $config['primary'];
+    protected function check()
+    {
+        $dbConfig = $this->getPrimary();
 
-        $external = $config['external'];
+        $collection = $this->getPrimaryFromConfigFiles();
 
-        $secondary = $config['secondary'];
+        $collection->each(function ($item, $key) {
+            if (PrimaryIdp::where('slug', $key)->first()) {
+                Debug::debug(print_r("the slug $key is found in the database"));
+            } else {
+                Debug::debug(print_r("the slug $key is not found in the database"));
+            }
+        });
+    }
 
-        $test = collect($primary)->map(function ($row) {
+    /**
+     * Returns a collection of Primary Identity Providers configurations sorted by priority.
+     *
+     * @return Collection
+     */
+    protected function getPrimaryFromConfigFiles()
+    {
+        $config = $this->ci->config['identity_providers']['primary'];
+
+        return collect($config)->map(function ($row) {
             return (object) $row;
-        });
-
-        Debug::debug(print_r($test, true));
-
-        $test->each(function ($item) {
-            print_r($item->class_name);
-        });
-    }
-
-    protected function getPrimary()
-    {
-        return PrimaryIdp::all();
-    }
-
-    protected function getExternal()
-    {
-        return ExternalIdp::all();
+        })->sortBy('priority');
     }
 
     /**
-     * Read authentication configuration from database.
+     * Returns a collection of External Identity Providers configurations.
      *
-     * @return array true/false if operation is successfull
+     * @return Collection
      */
-    protected function getConfigFromDatabase()
+    protected function getExternalFromConfigFiles()
     {
-        $cacheHelper = new CacheHelper($this->ci);
+        $config = $this->ci->config['identity_providers']['external'];
 
-        return $cacheHelper->clearCache();
-    }
-
-    /**
-     * Clear the Router cache data file.
-     *
-     * @return bool true/false if operation is successfull
-     */
-    protected function clearRouterCache()
-    {
-        return $this->ci->router->clearCache();
+        return collect($config)->map(function ($row) {
+            return (object) $row;
+        })->sortBy('priority');
     }
 }

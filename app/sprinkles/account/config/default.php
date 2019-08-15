@@ -17,8 +17,10 @@ return [
      'primary' => [
          'database' => [
              'class_name' => 'DatabaseAuthenticator',
+             'priority'   => 5,
          ],
          'ldap' => [
+           'priority'           => 1,
              'class_name'       => 'UserFrosting\\Sprinkle\\ExampleSprinkle\\Authenticator\\Primary\\LDAPAuthenticator',
              'pretty_name'      => 'GenericCorp Domain Login',
              'description'      => 'Login using a Generic Corperation Domain account',
