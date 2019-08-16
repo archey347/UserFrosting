@@ -42,24 +42,20 @@ class AuthenticateStatusCommand extends BaseCommand
 
         $config = $this->ci->config['identity_providers'];
 
-        $primaryCollection = $this->getPrimary();
-
-        $externalCollection = $this->getExternal();
-
         $test = $this->check();
+
+        Debug::debug(print_r($this->result, true));
     }
 
     protected function check()
     {
-        $dbConfig = $this->getPrimary();
-
         $collection = $this->getPrimaryFromConfigFiles();
 
         $collection->each(function ($item, $key) {
             if (PrimaryIdp::where('slug', $key)->first()) {
-                Debug::debug(print_r("the slug $key is found in the database"));
+                $this->result['exists'][] = $key;
             } else {
-                Debug::debug(print_r("the slug $key is not found in the database"));
+                $this->result['missing'][] = $key;
             }
         });
     }
