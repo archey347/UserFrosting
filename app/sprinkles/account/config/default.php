@@ -96,7 +96,7 @@ return [
     * Configuration for the 'password reset' feature
     * ----------------------------------------------------------------------
     */
-   'password_reset' => [
+    'password_reset' => [
         'algorithm'  => 'sha512',
         'timeouts'   => [
             'create' => 86400,
