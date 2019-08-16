@@ -52,11 +52,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Config to set Domain of RememberMe Cookie ([#990], [#991]; Thanks @xrobau !)
 - Config settings for password min/max length ([#993])
+- `migrate:clean` bakery command ([#1007])
 
 ### Fixed
 - [PHPMailer] Turn off opportunistic TLS when disabled ([#986], [#987])
 - Migrator now ignore files that don't end in `.php` ([#965], [#998])
 - Respects CSRF_ENABLED environment variable ([#976]; Thanks @Poldovico !)
+- Checkbox bug on password change form ([#1008])
+- On role page, users table action buttons not working ([#1010])
 
 ## [v4.2.2]
 
