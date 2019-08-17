@@ -1,5 +1,4 @@
 <?php
-
 /*
  * UserFrosting (http://www.userfrosting.com)
  *
@@ -7,6 +6,7 @@
  * @copyright Copyright (c) 2019 Alexander Weissman
  * @license   https://github.com/userfrosting/UserFrosting/blob/master/LICENSE.md (MIT License)
  */
+namespace UserFrosting\Sprinkle\Account\Authenticate\IdentityProviders;
 
 use UserFrosting\Sprinkle\Account\Database\Models\Interfaces\PrimaryIdpInterface;
 use UserFrosting\Sprinkle\Account\Authenticate\RawUser;

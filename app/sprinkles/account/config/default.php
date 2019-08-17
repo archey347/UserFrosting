@@ -16,7 +16,7 @@ return [
   'identity_providers' => [
      'primary' => [
          'database' => [
-             'class_name' => 'DatabaseAuthenticator',
+             'class_name' => 'UserFrosting\\Sprinkle\\Account\\IdentityProviders\\DatabaseIdp',
              'priority'   => 5,
          ],
          'ldap' => [
