@@ -12,10 +12,8 @@ namespace UserFrosting\Sprinkle\Account\Bakery;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use UserFrosting\Sprinkle\Core\Twig\CacheHelper;
 use UserFrosting\System\Bakery\BaseCommand;
 use UserFrosting\Sprinkle\Account\Database\Models\PrimaryIdp;
-use UserFrosting\Sprinkle\Account\Database\Models\ExternalIdp;
 use UserFrosting\Sprinkle\Core\Facades\Debug;
 
 /**
@@ -40,80 +38,53 @@ class AuthenticateStatusCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->io->title('Writing Authenticator Configuration Values');
+        $this->io->title('Authenticator Configuration Status');
 
         $config = $this->ci->config['identity_providers'];
 
-        $primary = $config['primary'];
+        $test = $this->check();
 
-        $external = $config['external'];
+        Debug::debug(print_r($this->result, true));
+    }
 
-        $secondary = $config['secondary'];
-        /*
-                print_r($primary);
-                print_r($external);
-                print_r($secondary);
-        */
+    protected function check()
+    {
+        $collection = $this->getPrimaryFromConfigFiles();
 
-        $configurations = [];
-
-        foreach ($primary as $key => $value) {
-            if (!$this->checkPrimary($key)) {
-                $idp = new PrimaryIdp();
-                $idp->slug = $key;
-                $idp->save();
-                $configurations['new'][] = $key;
+        $collection->each(function ($item, $key) {
+            if (PrimaryIdp::where('slug', $key)->first()) {
+                $this->result['exists'][] = $key;
             } else {
-                $configurations['exists'][] = $key;
+                $this->result['missing'][] = $key;
             }
-        }
-
-        Debug::debug(print_r($configurations, true));
-
-        foreach ($external as $key => $value) {
-            //      print_r($key);
-            $test = $this->checkExternal($key);
-            //      print_r($test);
-        }
-    }
-
-    protected function checkPrimary(string $string)
-    {
-        return PrimaryIdp::where('slug', "$string")->first();
-    }
-
-    protected function checkExternal(string $string)
-    {
-        return ExternalIdp::where('slug', "$string")->first();
+        });
     }
 
     /**
-     * Read authentication configuration from configuration files.
-     */
-    protected function getConfigFromFiles()
-    {
-        $this->ci->cache->flush();
-    }
-
-    /**
-     * Read authentication configuration from database.
+     * Returns a collection of Primary Identity Providers configurations sorted by priority.
      *
-     * @return array true/false if operation is successfull
+     * @return Collection
      */
-    protected function getConfigFromDatabase()
+    protected function getPrimaryFromConfigFiles()
     {
-        $cacheHelper = new CacheHelper($this->ci);
+        $config = $this->ci->config['identity_providers']['primary'];
 
-        return $cacheHelper->clearCache();
+        return collect($config)->map(function ($row) {
+            return (object) $row;
+        })->sortBy('priority');
     }
 
     /**
-     * Clear the Router cache data file.
+     * Returns a collection of External Identity Providers configurations.
      *
-     * @return bool true/false if operation is successfull
+     * @return Collection
      */
-    protected function clearRouterCache()
+    protected function getExternalFromConfigFiles()
     {
-        return $this->ci->router->clearCache();
+        $config = $this->ci->config['identity_providers']['external'];
+
+        return collect($config)->map(function ($row) {
+            return (object) $row;
+        })->sortBy('priority');
     }
 }
