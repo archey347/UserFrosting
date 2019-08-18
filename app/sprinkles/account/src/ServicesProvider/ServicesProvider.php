@@ -27,7 +27,8 @@ use UserFrosting\Sprinkle\Account\Repository\PasswordResetRepository;
 use UserFrosting\Sprinkle\Account\Repository\VerificationRepository;
 use UserFrosting\Sprinkle\Account\Twig\AccountExtension;
 use UserFrosting\Sprinkle\Core\Log\MixedFormatter;
-use UserFrosting\Sprinkle\IdentityProviders\IdentityProvdierManager;
+use UserFrosting\Sprinkle\IdentityProviders\IdentityProviderManager;
+
 /**
  * Registers services for the account sprinkle, such as currentUser, etc.
  *
@@ -96,7 +97,7 @@ class ServicesProvider
         $container['identityProviders'] = function ($c) {
             $config = $c->config;
 
-            $idpManager = new IdentityProvdierManager($config['identity_providers']);
+            $idpManager = new IdentityProviderManager($config['identity_providers']);
 
             return $idpManager;
         };

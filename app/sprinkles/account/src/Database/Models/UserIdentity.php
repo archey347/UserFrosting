@@ -13,21 +13,21 @@ namespace UserFrosting\Sprinkle\Account\Database\Models;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 /**
- * UserPrimaryIdp Class.
+ * UserIdentity Class.
  *
- * Represents a User Primary Identity Provider object as stored in the database.
+ * Represents a User Identity Provider object as stored in the database.
  *
  * @author Archey Barrell
  * @author Amos Folz
  *
  * @property string slug
  */
-class UserPrimaryIdp extends Pivot
+class UserIdentity extends Pivot
 {
     /**
      * @var string The name of the table for the current model.
      */
-    protected $table = 'users_primary_idps';
+    protected $table = 'users_identity_providers';
 
     protected $fillable = [
         'external_id',

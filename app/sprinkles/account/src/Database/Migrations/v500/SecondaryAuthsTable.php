@@ -8,14 +8,14 @@
  * @license   https://github.com/userfrosting/UserFrosting/blob/master/LICENSE.md (MIT License)
  */
 
-namespace UserFrosting\Sprinkle\Account\Database\Migrations\v440;
+namespace UserFrosting\Sprinkle\Account\Database\Migrations\v500;
 
 use Illuminate\Database\Schema\Blueprint;
 use UserFrosting\Sprinkle\Core\Database\Migration;
 
 /**
- * Primary Identity Providers migration.
- * Manages primary identity providers authentication information.
+ * Secondary Authentication migration.
+ * Manages secondary authentication (2FA MFA) information.
  * Version 4.4.0.
  *
  * See https://laravel.com/docs/5.8/migrations#tables
@@ -23,7 +23,7 @@ use UserFrosting\Sprinkle\Core\Database\Migration;
  * @author Archey Barrell
  * @author Amos Folz
  */
-class PrimaryIdpsTable extends Migration
+class SecondaryAuthsTable extends Migration
 {
     /**
      * {@inheritdoc}
@@ -36,8 +36,8 @@ class PrimaryIdpsTable extends Migration
      */
     public function up()
     {
-        if (!$this->schema->hasTable('primary_idps')) {
-            $this->schema->create('primary_idps', function (Blueprint $table) {
+        if (!$this->schema->hasTable('secondary_auths')) {
+            $this->schema->create('secondary_auths', function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('slug')->unique();
                 $table->timestamps();
@@ -54,6 +54,6 @@ class PrimaryIdpsTable extends Migration
      */
     public function down()
     {
-        $this->schema->drop('primary_idps');
+        $this->schema->drop('secondary_auths');
     }
 }

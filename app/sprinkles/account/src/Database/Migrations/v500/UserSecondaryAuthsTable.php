@@ -8,14 +8,14 @@
  * @license   https://github.com/userfrosting/UserFrosting/blob/master/LICENSE.md (MIT License)
  */
 
-namespace UserFrosting\Sprinkle\Account\Database\Migrations\v440;
+namespace UserFrosting\Sprinkle\Account\Database\Migrations\v500;
 
 use Illuminate\Database\Schema\Blueprint;
 use UserFrosting\Sprinkle\Core\Database\Migration;
 
 /**
- * Account Identity Providers migration.
- * Manages user account external identity provider information.
+ * Users Multi-factor authentication migration.
+ * Manages user account secondary authentication information.
  * Version 4.4.0.
  *
  * See https://laravel.com/docs/5.8/migrations#tables
@@ -23,14 +23,14 @@ use UserFrosting\Sprinkle\Core\Database\Migration;
  * @author Archey Barrell
  * @author Amos Folz
  */
-class UserExternalIdpsTable extends Migration
+class UserSecondaryAuthsTable extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public static $dependencies = [
         '\UserFrosting\Sprinkle\Account\Database\Migrations\v400\UsersTable',
-        '\UserFrosting\Sprinkle\Account\Database\Migrations\v440\ExternalIdpsTable',
+        '\UserFrosting\Sprinkle\Account\Database\Migrations\v500\SecondaryAuthsTable',
     ];
 
     /**
@@ -38,11 +38,11 @@ class UserExternalIdpsTable extends Migration
      */
     public function up()
     {
-        if (!$this->schema->hasTable('users_external_idps')) {
-            $this->schema->create('users_external_idps', function (Blueprint $table) {
-                $table->integer('external_idps_id')->unsigned()->comment('The id of the idp.');
+        if (!$this->schema->hasTable('users_secondary_auths')) {
+            $this->schema->create('users_secondary_auths', function (Blueprint $table) {
+                $table->integer('secondary_auths_id')->unsigned()->comment('The id of the authentication method.');
                 $table->integer('user_id')->unsigned()->comment('The id of the user.');
-                $table->string('external_id');
+                $table->boolean('default');
                 $table->json('options');
                 $table->timestamps();
 
@@ -50,7 +50,7 @@ class UserExternalIdpsTable extends Migration
                 $table->collation = 'utf8_unicode_ci';
                 $table->charset = 'utf8';
                 $table->foreign('user_id')->references('id')->on('users');
-                $table->foreign('external_idps_id')->references('id')->on('external_idps');
+                $table->foreign('secondary_auths_id')->references('id')->on('secondary_auths');
             });
         }
     }
@@ -60,6 +60,6 @@ class UserExternalIdpsTable extends Migration
      */
     public function down()
     {
-        $this->schema->drop('users_external_idps');
+        $this->schema->drop('users_secondary_auths');
     }
 }

@@ -16,19 +16,38 @@ namespace UserFrosting\Sprinkle\IdentityProviders;
  * @author Archey Barrell
  * @author Amos Folz
  */
-class IdentityProvdierManager
+class IdentityProviderManager
 {
     /**
      * @var Config
      */
     protected $config;
 
-    public function __construct($config) {
+    public function __construct($config)
+    {
         $this->config = $config;
     }
 
-    public function getPrimaryIdp($slug) 
+    public function getPrimaryIdp($slug)
     {
+    }
 
+    protected function checkDatabaseIdentityProviders()
+    {
+        $configured = $this->getIdentityProviders();
+    }
+
+    /**
+     * Returns a collection of Identity Providers configurations sorted by priority.
+     *
+     * @return Collection
+     */
+    protected function getIdentityProviders()
+    {
+        $config = $this->config['identity_providers'];
+
+        return collect($config)->map(function ($row) {
+            return (object) $row;
+        })->sortBy('priority');
     }
 }

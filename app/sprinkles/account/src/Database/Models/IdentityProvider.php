@@ -22,12 +22,12 @@ use UserFrosting\Sprinkle\Core\Database\Models\Model;
  *
  * @property string slug
  */
-class PrimaryIdp extends Model
+class IdentityProvider extends Model
 {
     /**
      * @var string The name of the table for the current model.
      */
-    protected $table = 'primary_idps';
+    protected $table = 'identity_providers';
 
     protected $fillable = [
         'slug',
@@ -48,6 +48,6 @@ class PrimaryIdp extends Model
 
         return $this->belongsToMany($classMapper->getClassMapping('user')
                     ->withTimestamps()
-                    ->using('UserPrimaryIdp'));
+                    ->using('UserIdentity'));
     }
 }
