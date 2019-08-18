@@ -10,6 +10,8 @@
 
 namespace UserFrosting\Sprinkle\IdentityProviders;
 
+use UserFrosting\Sprinkle\Account\Database\Models\IdentityProvider;
+
 /**
  * Identity Provider manager.
  *
@@ -32,11 +34,6 @@ class IdentityProviderManager
     {
     }
 
-    protected function checkDatabaseIdentityProviders()
-    {
-        $configured = $this->getIdentityProviders();
-    }
-
     /**
      * Returns a collection of Identity Providers configurations sorted by priority.
      *
@@ -49,5 +46,28 @@ class IdentityProviderManager
         return collect($config)->map(function ($row) {
             return (object) $row;
         })->sortBy('priority');
+    }
+
+    /**
+     * Checks each configured Identity Provider to see if there is a corresponding record in database.
+     * Will mark each entry 0 if it doesn't exist, 1 otherwise.
+     *
+     * @return array [description]
+     */
+    protected function verifyDatabaseIdentityProviders()
+    {
+        $collection = $this->getIdentityProviders();
+
+        $results = [];
+
+        $collection->each(function ($item, $key) use (&$results) {
+            if (IdentityProvider::where('slug', $key)->first()) {
+                $results[$key] = 1;
+            } else {
+                $results[$key] = 0;
+            }
+        });
+
+        return $results;
     }
 }

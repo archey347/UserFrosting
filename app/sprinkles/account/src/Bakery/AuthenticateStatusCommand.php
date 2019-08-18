@@ -13,7 +13,7 @@ namespace UserFrosting\Sprinkle\Account\Bakery;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use UserFrosting\System\Bakery\BaseCommand;
-use UserFrosting\Sprinkle\Account\Database\Models\PrimaryIdp;
+use UserFrosting\Sprinkle\Account\Database\Models\IdentityProvider;
 use UserFrosting\Sprinkle\Core\Facades\Debug;
 
 /**
@@ -44,20 +44,24 @@ class AuthenticateStatusCommand extends BaseCommand
 
         $test = $this->check();
 
-        Debug::debug(print_r($this->result, true));
+        Debug::debug(print_r($test, true));
     }
 
     protected function check()
     {
         $collection = $this->getPrimaryFromConfigFiles();
 
-        $collection->each(function ($item, $key) {
-            if (PrimaryIdp::where('slug', $key)->first()) {
-                $this->result['exists'][] = $key;
+        $results = [];
+
+        $collection->each(function ($item, $key) use (&$results) {
+            if (IdentityProvider::where('slug', $key)->first()) {
+                $results[$key] = 1;
             } else {
-                $this->result['missing'][] = $key;
+                $results[$key] = 0;
             }
         });
+
+        return $results;
     }
 
     /**
