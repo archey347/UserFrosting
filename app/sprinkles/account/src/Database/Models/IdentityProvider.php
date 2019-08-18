@@ -13,9 +13,9 @@ namespace UserFrosting\Sprinkle\Account\Database\Models;
 use UserFrosting\Sprinkle\Core\Database\Models\Model;
 
 /**
- * PrimaryIdp Class.
+ * IdentityProvider Class.
  *
- * Represents a Primary Identity Provider object as stored in the database.
+ * Represents a Identity Provider object as stored in the database.
  *
  * @author Archey Barrell
  * @author Amos Folz

@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 /**
  * UserIdentity Class.
  *
- * Represents a User Identity Provider object as stored in the database.
+ * Represents a User Identity object as stored in the database.
  *
  * @author Archey Barrell
  * @author Amos Folz

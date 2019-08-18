@@ -14,9 +14,9 @@ use Illuminate\Database\Schema\Blueprint;
 use UserFrosting\Sprinkle\Core\Database\Migration;
 
 /**
- * Primary Identity Providers migration.
- * Manages primary identity providers authentication information.
- * Version 4.4.0.
+ * Identity Providers migration.
+ * Manages identity providers authentication information.
+ * Version 5.0.0
  *
  * See https://laravel.com/docs/5.8/migrations#tables
  *

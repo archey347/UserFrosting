@@ -16,7 +16,7 @@ use UserFrosting\Sprinkle\Core\Database\Migration;
 /**
  * Secondary Authentication migration.
  * Manages secondary authentication (2FA MFA) information.
- * Version 4.4.0.
+ * Version 5.0.0.
  *
  * See https://laravel.com/docs/5.8/migrations#tables
  *

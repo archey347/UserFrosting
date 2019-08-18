@@ -61,13 +61,13 @@ class AuthenticateStatusCommand extends BaseCommand
     }
 
     /**
-     * Returns a collection of Primary Identity Providers configurations sorted by priority.
+     * Returns a collection of Identity Providers configurations sorted by priority.
      *
      * @return Collection
      */
     protected function getPrimaryFromConfigFiles()
     {
-        $config = $this->ci->config['identity_providers']['primary'];
+        $config = $this->ci->config['identity_providers'];
 
         return collect($config)->map(function ($row) {
             return (object) $row;
