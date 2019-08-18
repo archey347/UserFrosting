@@ -49,10 +49,9 @@ class IdentityProviderManager
     }
 
     /**
-     * Checks each configured Identity Provider to see if there is a corresponding record in database.
-     * Will mark each entry 0 if it doesn't exist, 1 otherwise.
+     * Verifies that each Identity Provider in configuration files has a corresponding record in database.
      *
-     * @return array [description]
+     * @return array
      */
     protected function verifyDatabaseIdentityProviders()
     {
@@ -62,9 +61,9 @@ class IdentityProviderManager
 
         $collection->each(function ($item, $key) use (&$results) {
             if (IdentityProvider::where('slug', $key)->first()) {
-                $results[$key] = 1;
+                $results['exists'][] = $key;
             } else {
-                $results[$key] = 0;
+                $results['missing'][] = $key;
             }
         });
 

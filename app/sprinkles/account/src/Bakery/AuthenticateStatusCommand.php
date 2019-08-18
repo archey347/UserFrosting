@@ -42,26 +42,46 @@ class AuthenticateStatusCommand extends BaseCommand
 
         $config = $this->ci->config['identity_providers'];
 
-        $test = $this->check();
+        $this->writeDatabaseIdentityProviders();
+
+        $test = $this->verifyDatabaseIdentityProviders();
 
         Debug::debug(print_r($test, true));
     }
 
-    protected function check()
+    /**
+     * Verifies that each Identity Provider in configuration files has a corresponding record in database.
+     *
+     * @return array
+     */
+    protected function verifyDatabaseIdentityProviders()
     {
-        $collection = $this->getPrimaryFromConfigFiles();
+        $collection = $this->getIdentityProviders();
 
         $results = [];
 
         $collection->each(function ($item, $key) use (&$results) {
             if (IdentityProvider::where('slug', $key)->first()) {
-                $results[$key] = 1;
+                $results['exists'][] = $key;
             } else {
-                $results[$key] = 0;
+                $results['missing'][] = $key;
             }
         });
 
         return $results;
+    }
+
+    protected function writeDatabaseIdentityProviders()
+    {
+        $providers = $this->verifyDatabaseIdentityProviders();
+
+        $missing = $providers['missing'];
+
+        foreach ($missing as $slug) {
+            $identityProvider = new IdentityProvider();
+            $identityProvider->slug = $slug;
+            $identityProvider->save();
+        }
     }
 
     /**
@@ -69,23 +89,9 @@ class AuthenticateStatusCommand extends BaseCommand
      *
      * @return Collection
      */
-    protected function getPrimaryFromConfigFiles()
+    protected function getIdentityProviders()
     {
         $config = $this->ci->config['identity_providers'];
-
-        return collect($config)->map(function ($row) {
-            return (object) $row;
-        })->sortBy('priority');
-    }
-
-    /**
-     * Returns a collection of External Identity Providers configurations.
-     *
-     * @return Collection
-     */
-    protected function getExternalFromConfigFiles()
-    {
-        $config = $this->ci->config['identity_providers']['external'];
 
         return collect($config)->map(function ($row) {
             return (object) $row;
