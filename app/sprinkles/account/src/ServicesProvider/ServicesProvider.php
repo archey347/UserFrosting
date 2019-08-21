@@ -27,7 +27,7 @@ use UserFrosting\Sprinkle\Account\Repository\PasswordResetRepository;
 use UserFrosting\Sprinkle\Account\Repository\VerificationRepository;
 use UserFrosting\Sprinkle\Account\Twig\AccountExtension;
 use UserFrosting\Sprinkle\Core\Log\MixedFormatter;
-use UserFrosting\Sprinkle\IdentityProviders\IdentityProviderManager;
+use UserFrosting\Sprinkle\Account\IdentityProviders\IdentityProviderManager;
 
 /**
  * Registers services for the account sprinkle, such as currentUser, etc.
@@ -72,6 +72,7 @@ class ServicesProvider
             $classMapper->setClassMapping('password_reset', 'UserFrosting\Sprinkle\Account\Database\Models\PasswordReset');
             $classMapper->setClassMapping('verification', 'UserFrosting\Sprinkle\Account\Database\Models\Verification');
             $classMapper->setClassMapping('persistence', 'UserFrosting\Sprinkle\Account\Database\Models\Persistence');
+            $classMapper->setClassMapping('identity_provider', 'UserFrosting\Sprinkle\Account\Database\Models\IdentityProvider');
 
             return $classMapper;
         });
@@ -96,8 +97,9 @@ class ServicesProvider
 
         $container['identityProviders'] = function ($c) {
             $config = $c->config;
+            $classMapper = $c->classMapper;
 
-            $idpManager = new IdentityProviderManager($config['identity_providers']);
+            $idpManager = new IdentityProviderManager($config, $classMapper);
 
             return $idpManager;
         };

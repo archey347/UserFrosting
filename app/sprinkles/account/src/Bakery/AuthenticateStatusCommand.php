@@ -13,7 +13,6 @@ namespace UserFrosting\Sprinkle\Account\Bakery;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use UserFrosting\System\Bakery\BaseCommand;
-use UserFrosting\Sprinkle\Account\Database\Models\IdentityProvider;
 use UserFrosting\Sprinkle\Core\Facades\Debug;
 
 /**
@@ -30,7 +29,7 @@ class AuthenticateStatusCommand extends BaseCommand
     protected function configure()
     {
         $this->setName('authenticate:status')
-             ->setDescription('Writes system configuration files authenticator values into the authentication database tables.');
+             ->setDescription('Show status of Identity Providers.');
     }
 
     /**
@@ -40,61 +39,14 @@ class AuthenticateStatusCommand extends BaseCommand
     {
         $this->io->title('Authenticator Configuration Status');
 
-        $config = $this->ci->config['identity_providers'];
+        $identityProviders = $this->ci->identityProviders;
 
-        $this->writeDatabaseIdentityProviders();
+        $identityProviders->writeDatabaseIdentityProviders();
 
-        $test = $this->verifyDatabaseIdentityProviders();
+        //  Debug::debug(print_r($identityProviders, true));
 
-        Debug::debug(print_r($test, true));
-    }
+      //  $test = $this->verifyDatabaseIdentityProviders();
 
-    /**
-     * Verifies that each Identity Provider in configuration files has a corresponding record in database.
-     *
-     * @return array
-     */
-    protected function verifyDatabaseIdentityProviders()
-    {
-        $collection = $this->getIdentityProviders();
-
-        $results = [];
-
-        $collection->each(function ($item, $key) use (&$results) {
-            if (IdentityProvider::where('slug', $key)->first()) {
-                $results['exists'][] = $key;
-            } else {
-                $results['missing'][] = $key;
-            }
-        });
-
-        return $results;
-    }
-
-    protected function writeDatabaseIdentityProviders()
-    {
-        $providers = $this->verifyDatabaseIdentityProviders();
-
-        $missing = $providers['missing'];
-
-        foreach ($missing as $slug) {
-            $identityProvider = new IdentityProvider();
-            $identityProvider->slug = $slug;
-            $identityProvider->save();
-        }
-    }
-
-    /**
-     * Returns a collection of Identity Providers configurations sorted by priority.
-     *
-     * @return Collection
-     */
-    protected function getIdentityProviders()
-    {
-        $config = $this->ci->config['identity_providers'];
-
-        return collect($config)->map(function ($row) {
-            return (object) $row;
-        })->sortBy('priority');
+        //    Debug::debug(print_r($test, true));
     }
 }

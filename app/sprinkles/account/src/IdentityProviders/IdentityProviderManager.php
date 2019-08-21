@@ -8,9 +8,11 @@
  * @license   https://github.com/userfrosting/UserFrosting/blob/master/LICENSE.md (MIT License)
  */
 
-namespace UserFrosting\Sprinkle\IdentityProviders;
+namespace UserFrosting\Sprinkle\Account\IdentityProviders;
 
-use UserFrosting\Sprinkle\Account\Database\Models\IdentityProvider;
+use UserFrosting\Sprinkle\Core\Util\ClassMapper;
+use UserFrosting\Support\Repository\Repository as Config;
+use UserFrosting\Sprinkle\Core\Facades\Debug;
 
 /**
  * Identity Provider manager.
@@ -21,13 +23,20 @@ use UserFrosting\Sprinkle\Account\Database\Models\IdentityProvider;
 class IdentityProviderManager
 {
     /**
+     * @var ClassMapper
+     */
+    protected $classMapper;
+
+    /**
      * @var Config
      */
     protected $config;
 
-    public function __construct($config)
+    public function __construct(Config $config, ClassMapper $classMapper)
     {
         $this->config = $config;
+
+        $this->classMapper = $classMapper;
     }
 
     public function getPrimaryIdp($slug)
@@ -60,13 +69,32 @@ class IdentityProviderManager
         $results = [];
 
         $collection->each(function ($item, $key) use (&$results) {
-            if (IdentityProvider::where('slug', $key)->first()) {
+            if ($this->classMapper->staticMethod('identity_provider', 'where', 'slug', "$key")->first()) {
                 $results['exists'][] = $key;
             } else {
                 $results['missing'][] = $key;
             }
         });
+        //  Debug::debug(print_r($results, true));
 
         return $results;
+    }
+
+    /**
+     * WWrites Identity Providers configuration to database.
+     *
+     * @return [type] [description]
+     */
+    public function writeDatabaseIdentityProviders()
+    {
+        $identityProviders = $this->verifyDatabaseIdentityProviders();
+
+        $missing = $identityProviders['missing'];
+
+        foreach ($missing as $slug) {
+            $identityProvider = $this->classMapper->createInstance('identity_provider', ['slug' => $slug]);
+            $identityProvider->slug = $slug;
+            $identityProvider->save();
+        }
     }
 }
