@@ -12,7 +12,6 @@ namespace UserFrosting\Sprinkle\Account\IdentityProviders;
 
 use UserFrosting\Sprinkle\Core\Util\ClassMapper;
 use UserFrosting\Support\Repository\Repository as Config;
-use UserFrosting\Sprinkle\Core\Facades\Debug;
 
 /**
  * Identity Provider manager.
@@ -62,38 +61,74 @@ class IdentityProviderManager
      *
      * @return array
      */
-    protected function verifyDatabaseIdentityProviders()
+    public function verifyDatabaseIdentityProviders()
     {
         $collection = $this->getIdentityProviders();
 
-        $results = [];
+        $success = true;
 
-        $collection->each(function ($item, $key) use (&$results) {
-            if ($this->classMapper->staticMethod('identity_provider', 'where', 'slug', "$key")->first()) {
-                $results['exists'][] = $key;
-            } else {
-                $results['missing'][] = $key;
+        $collection->each(function ($item, $key) use (&$success) {
+            if (!$this->classMapper->staticMethod('identity_provider', 'where', 'slug', "$key")->first()) {
+                $success = false;
+
+                return $success;
             }
         });
-        //  Debug::debug(print_r($results, true));
 
-        return $results;
+        return $success;
     }
 
     /**
-     * WWrites Identity Providers configuration to database.
+     * Get Identity Providers in configuration files that do not have a corresponding record in the database.
+     *
+     * @return array
+     */
+    public function getMissingDatabaseIdentityProviders(): array
+    {
+        $collection = $this->getIdentityProviders();
+
+        $missing = [];
+
+        $collection->each(function ($item, $key) use (&$missing) {
+            if (!$this->classMapper->staticMethod('identity_provider', 'where', 'slug', "$key")->first()) {
+                $missing[] = $key;
+            }
+        });
+
+        return $missing;
+    }
+
+    /**
+     * Get Identity Providers in configuration files that have a corresponding record in the database.
+     *
+     * @return array
+     */
+    public function getExistingDatabaseIdentityProviders(): array
+    {
+        $collection = $this->getIdentityProviders();
+
+        $exists = [];
+
+        $collection->each(function ($item, $key) use (&$exists) {
+            if ($this->classMapper->staticMethod('identity_provider', 'where', 'slug', "$key")->first()) {
+                $exists[] = $key;
+            }
+        });
+
+        return $exists;
+    }
+
+    /**
+     * Writes Identity Providers configuration to database.
      *
      * @return [type] [description]
      */
     public function writeDatabaseIdentityProviders()
     {
-        $identityProviders = $this->verifyDatabaseIdentityProviders();
+        $identityProviders = $this->getMissingDatabaseIdentityProviders();
 
-        $missing = $identityProviders['missing'];
-
-        foreach ($missing as $slug) {
+        foreach ($identityProviders as $slug) {
             $identityProvider = $this->classMapper->createInstance('identity_provider', ['slug' => $slug]);
-            $identityProvider->slug = $slug;
             $identityProvider->save();
         }
     }

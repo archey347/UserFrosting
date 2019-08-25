@@ -41,12 +41,14 @@ class AuthenticateStatusCommand extends BaseCommand
 
         $identityProviders = $this->ci->identityProviders;
 
-        $identityProviders->writeDatabaseIdentityProviders();
+        //$identityProviders->writeDatabaseIdentityProviders();
 
-        //  Debug::debug(print_r($identityProviders, true));
+        $test = $identityProviders->getMissingDatabaseIdentityProviders();
 
-      //  $test = $this->verifyDatabaseIdentityProviders();
+        Debug::debug(print_r($test, true));
 
-        //    Debug::debug(print_r($test, true));
+        $test2 = $identityProviders->getPrimaryIdp('ldap');
+
+        Debug::debug(print_r($test2, true));
     }
 }
