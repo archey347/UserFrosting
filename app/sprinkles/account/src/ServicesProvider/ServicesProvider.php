@@ -99,9 +99,9 @@ class ServicesProvider
             $config = $c->config;
             $classMapper = $c->classMapper;
 
-            $idpManager = new IdentityProviderManager($config, $classMapper);
+            $identityProviderManager = new IdentityProviderManager($config, $classMapper);
 
-            return $idpManager;
+            return $identityProviderManager;
         };
 
         /*

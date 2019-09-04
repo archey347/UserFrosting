@@ -17,6 +17,7 @@ use UserFrosting\Fortress\RequestDataTransformer;
 use UserFrosting\Fortress\RequestSchema;
 use UserFrosting\Fortress\ServerSideValidator;
 use UserFrosting\Sprinkle\Core\Controller\SimpleController;
+use UserFrosting\Sprinkle\Core\Facades\Debug;
 
 /**
  * Controller class for /auth/* URLs.  Handles account-related authentication.
@@ -72,29 +73,34 @@ class AuthenticationController extends SimpleController
         /** @var \UserFrosting\Support\Repository\Repository $config */
         $config = $this->ci->config;
 
+        $identityProviders = $this->ci->identityProviders;
+
+        Debug::debug(print_r($identityProviders, true));
+
         // Get POST parameters
         $params = $request->getParsedBody();
 
-        // Load the request schema
-        $schema = new RequestSchema('schema://requests/login.yaml');
+        /*
+                // Load the request schema
+                $schema = new RequestSchema('schema://requests/login.yaml');
 
-        // Whitelist and set parameter defaults
-        $transformer = new RequestDataTransformer($schema);
-        $data = $transformer->transform($params);
+                // Whitelist and set parameter defaults
+                $transformer = new RequestDataTransformer($schema);
+                $data = $transformer->transform($params);
 
-        // Validate, and halt on validation errors.  Failed validation attempts do not count towards throttling limit.
-        $validator = new ServerSideValidator($schema, $this->ci->translator);
-        if (!$validator->validate($data)) {
-            $ms->addValidationErrors($validator);
+                // Validate, and halt on validation errors.  Failed validation attempts do not count towards throttling limit.
+                $validator = new ServerSideValidator($schema, $this->ci->translator);
+                if (!$validator->validate($data)) {
+                    $ms->addValidationErrors($validator);
 
-            return $response->withJson([], 400);
-        }
+                    return $response->withJson([], 400);
+                }
 
-        // Determine whether we are trying to log in with an email address or a username
-        $isEmail = filter_var($data['user_name'], FILTER_VALIDATE_EMAIL);
+                // Determine whether we are trying to log in with an email address or a username
+                $isEmail = filter_var($data['user_name'], FILTER_VALIDATE_EMAIL);
 
-        // Throttle requests
-
+                // Throttle requests
+        */
         /** @var \UserFrosting\Sprinkle\Core\Throttle\Throttler $throttler */
         $throttler = $this->ci->throttler;
 

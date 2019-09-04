@@ -47,7 +47,7 @@ class IdentityProviderManager
      *
      * @return Collection
      */
-    protected function getIdentityProviders()
+    protected function getIdentityProvidersByPriority()
     {
         $config = $this->config['identity_providers'];
 
@@ -59,11 +59,11 @@ class IdentityProviderManager
     /**
      * Verifies that each Identity Provider in configuration files has a corresponding record in database.
      *
-     * @return array
+     * @return bool True if each Identity Provider in configuration files has a corresponding record in database, false otherwise.
      */
-    public function verifyDatabaseIdentityProviders()
+    public function verifyDatabaseIdentityProviders() :bool
     {
-        $collection = $this->getIdentityProviders();
+        $collection = $this->getIdentityProvidersByPriority();
 
         $success = true;
 
@@ -85,7 +85,7 @@ class IdentityProviderManager
      */
     public function getMissingDatabaseIdentityProviders(): array
     {
-        $collection = $this->getIdentityProviders();
+        $collection = $this->getIdentityProvidersByPriority();
 
         $missing = [];
 
@@ -105,7 +105,7 @@ class IdentityProviderManager
      */
     public function getExistingDatabaseIdentityProviders(): array
     {
-        $collection = $this->getIdentityProviders();
+        $collection = $this->getIdentityProvidersByPriority();
 
         $exists = [];
 
