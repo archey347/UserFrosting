@@ -13,6 +13,8 @@ namespace UserFrosting\Sprinkle\Account\IdentityProviders;
 use UserFrosting\Sprinkle\Core\Util\ClassMapper;
 use UserFrosting\Support\Repository\Repository as Config;
 use UserFrosting\Sprinkle\Account\Database\Models\Interfaces\PrimaryIdpInterface;
+use UserFrosting\Sprinkle\Account\Database\Models\Interfaces\ExternalIdpInterface;
+
 
 /**
  * Identity Provider manager.
@@ -45,7 +47,7 @@ class IdentityProviderManager
      * 
      * @return PrimaryIdpInterface
      */
-    public function getPrimaryIdentityProvider($slug): PrimaryIdpInterface
+    public function getPrimaryIdentityProvider(String $slug): PrimaryIdpInterface
     {
         // Attempt to find the IDP
         $identityProviders = $this->getIdentityProviders()->where("type", "primary");
@@ -55,7 +57,7 @@ class IdentityProviderManager
 
         // Fail if not found
         if(!$config) {
-            new \Exception("A Primary Identity Provider with slug '$slug' doesn't exist");
+            new \Exception("A primary identity provider with slug '$slug' doesn't exist");
         }
 
         // Get the class name
@@ -64,6 +66,39 @@ class IdentityProviderManager
         // Check the class exists
         if(!class_exists($className)) {
             new \Exception("The primary identity provider with slug '$slug' has an invalid class name");
+        }
+
+        // Create the object
+        $identityProvider = new $className($config);
+
+        return $identityProvider;
+    }
+
+    /**
+     * Get an external identity provider object
+     * @param string $slug The slug of the IDP to get
+     * 
+     * @return ExternalIdpInterface
+     */
+    public function getExternalIdentityProvider(String $slug): ExternalIdpInterface
+    {
+        // Attempt to find the IDP
+        $identityProviders = $this->getIdentityProviders()->where("type", "external");
+
+        // Get the config
+        $config = $identityProviders[$slug];
+
+        // Fail if not found
+        if(!$config) {
+            new \Exception("An external identity provider with slug '$slug' doesn't exist");
+        }
+
+        // Get the class name
+        $className = $config->class_name;
+
+        // Check the class exists
+        if(!class_exists($className)) {
+            new \Exception("The external identity provider with slug '$slug' has an invalid class name");
         }
 
         // Create the object
