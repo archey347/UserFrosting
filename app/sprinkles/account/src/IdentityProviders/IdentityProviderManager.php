@@ -15,7 +15,6 @@ use UserFrosting\Support\Repository\Repository as Config;
 use UserFrosting\Sprinkle\Account\Database\Models\Interfaces\PrimaryIdpInterface;
 use UserFrosting\Sprinkle\Account\Database\Models\Interfaces\ExternalIdpInterface;
 
-
 /**
  * Identity Provider manager.
  *
@@ -44,19 +43,19 @@ class IdentityProviderManager
     /**
      * Get a primary identity provider object
      * @param string $slug The slug of the IDP to get
-     * 
+     *
      * @return PrimaryIdpInterface
      */
     public function getPrimaryIdentityProvider(String $slug): PrimaryIdpInterface
     {
         // Attempt to find the IDP
-        $identityProviders = $this->getIdentityProviders()->where("type", "primary");
+        $identityProviders = $this->getIdentityProviders()->where('type', 'primary');
 
         // Get the config
         $config = $identityProviders[$slug];
 
         // Fail if not found
-        if(!$config) {
+        if (!$config) {
             new \Exception("A primary identity provider with slug '$slug' doesn't exist");
         }
 
@@ -64,7 +63,7 @@ class IdentityProviderManager
         $className = $config->class_name;
 
         // Check the class exists
-        if(!class_exists($className)) {
+        if (!class_exists($className)) {
             new \Exception("The primary identity provider with slug '$slug' has an invalid class name");
         }
 
@@ -77,19 +76,19 @@ class IdentityProviderManager
     /**
      * Get an external identity provider object
      * @param string $slug The slug of the IDP to get
-     * 
+     *
      * @return ExternalIdpInterface
      */
     public function getExternalIdentityProvider(String $slug): ExternalIdpInterface
     {
         // Attempt to find the IDP
-        $identityProviders = $this->getIdentityProviders()->where("type", "external");
+        $identityProviders = $this->getIdentityProviders()->where('type', 'external');
 
         // Get the config
         $config = $identityProviders[$slug];
 
         // Fail if not found
-        if(!$config) {
+        if (!$config) {
             new \Exception("An external identity provider with slug '$slug' doesn't exist");
         }
 
@@ -97,7 +96,7 @@ class IdentityProviderManager
         $className = $config->class_name;
 
         // Check the class exists
-        if(!class_exists($className)) {
+        if (!class_exists($className)) {
             new \Exception("The external identity provider with slug '$slug' has an invalid class name");
         }
 
@@ -112,7 +111,7 @@ class IdentityProviderManager
      *
      * @return Collection
      */
-    protected function getIdentityProvidersByPriority()
+    protected function getIdentityProviders()
     {
         $config = $this->config['identity_providers'];
 
@@ -128,7 +127,7 @@ class IdentityProviderManager
      */
     public function verifyDatabaseIdentityProviders() :bool
     {
-        $collection = $this->getIdentityProvidersByPriority();
+        $collection = $this->getIdentityProviders();
 
         $success = true;
 
@@ -150,7 +149,7 @@ class IdentityProviderManager
      */
     public function getMissingDatabaseIdentityProviders(): array
     {
-        $collection = $this->getIdentityProvidersByPriority();
+        $collection = $this->getIdentityProviders();
 
         $missing = [];
 
@@ -170,7 +169,7 @@ class IdentityProviderManager
      */
     public function getExistingDatabaseIdentityProviders(): array
     {
-        $collection = $this->getIdentityProvidersByPriority();
+        $collection = $this->getIdentityProviders();
 
         $exists = [];
 

@@ -96,7 +96,7 @@ class Authenticator
      * @param Cache       $cache       Cache service instance
      * @param Capsule     $db          Database service instance
      */
-    public function __construct(ClassMapper $classMapper, Session $session, Config $config, Cache $cache, Capsule $db)
+    public function __construct(ClassMapper $classMapper, Session $session, Config $config, Cache $cache, Capsule $db, IdentityProviderManager $identityProviderManager)
     {
         $this->classMapper = $classMapper;
         $this->session = $session;
@@ -129,6 +129,45 @@ class Authenticator
 
         $this->user = null;
         $this->viaRemember = false;
+    }
+
+    public function attemptPrimary($identity, $password, $rememberMe = false)
+    {
+        $identityProviderManager = $this->identityProviderManager;
+
+        $identityProviders = $identityProviderManager->getIdentityProviders();
+
+        // Try to load the user, using the specified conditions
+        $user = $this->classMapper->getClassMapping('user')::where($identityColumn, $identityValue)->first();
+
+        if (!$user) {
+            throw new InvalidCredentialsException();
+        }
+
+        // Check that the user has a password set (so, rule out newly created accounts without a password)
+        if (!$user->password) {
+            throw new InvalidCredentialsException();
+        }
+
+        // Check that the user's account is enabled
+        if ($user->flag_enabled == 0) {
+            throw new AccountDisabledException();
+        }
+
+        // Check that the user's account is verified (if verification is required)
+        if ($this->config['site.registration.require_email_verification'] && $user->flag_verified == 0) {
+            throw new AccountNotVerifiedException();
+        }
+
+        // Here is my password.  May I please assume the identify of this user now?
+        if (Password::verify($password, $user->password)) {
+            $this->login($user, $rememberMe);
+
+            return $user;
+        } else {
+            // We know the password is at fault here (as opposed to the identity), but lets not give away the combination in case of someone bruteforcing
+            throw new InvalidCredentialsException();
+        }
     }
 
     /**
