@@ -23,6 +23,7 @@ use UserFrosting\Sprinkle\Account\Authenticate\Exception\AuthExpiredException;
 use UserFrosting\Sprinkle\Account\Authenticate\Exception\InvalidCredentialsException;
 use UserFrosting\Sprinkle\Account\Database\Models\Interfaces\UserInterface;
 use UserFrosting\Sprinkle\Account\Facades\Password;
+use UserFrosting\Sprinkle\Account\IdentityProviders\IdentityProviderManager;
 use UserFrosting\Sprinkle\Account\Rememberme\PDOStorage as RememberMePDO;
 use UserFrosting\Sprinkle\Core\Util\ClassMapper;
 use UserFrosting\Support\Repository\Repository as Config;
@@ -103,6 +104,7 @@ class Authenticator
         $this->config = $config;
         $this->cache = $cache;
         $this->db = $db;
+        $this->identityProviderManager = $identityProviderManager;
 
         // Initialize RememberMe storage
         $this->rememberMeStorage = new RememberMePDO($this->db);
@@ -131,14 +133,29 @@ class Authenticator
         $this->viaRemember = false;
     }
 
+    /**
+     * [attemptPrimary description]
+     * @param  [type] $identity   [description]
+     * @param  [type] $password   [description]
+     * @param  bool   $rememberMe [description]
+     * @return [type] [description]
+     */
     public function attemptPrimary($identity, $password, $rememberMe = false)
     {
         $identityProviderManager = $this->identityProviderManager;
 
-        $identityProviders = $identityProviderManager->getIdentityProviders();
+        $identityProviders = $identityProviderManager->getIdentityProviders('primary');
 
-        // Try to load the user, using the specified conditions
-        $user = $this->classMapper->getClassMapping('user')::where($identityColumn, $identityValue)->first();
+        /* This probably will need to be adjusted
+                // Try to load the user, using the specified conditions
+                $user = $this->classMapper->getClassMapping('user')::where($identity, $identityValue)->first();
+        */
+
+        $identityProviders->each(function ($item, $key) use ($identity, $password, $identityProviderManager) {
+            $identityProvider = $identityProviderManager->getPrimaryIdentityProvider($key);
+
+            $user = $identityProvider->attempt($identity, $password);
+        });
 
         if (!$user) {
             throw new InvalidCredentialsException();

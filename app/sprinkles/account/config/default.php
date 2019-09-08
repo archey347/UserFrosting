@@ -15,10 +15,10 @@ return [
 
     'identity_providers' => [
         'database' => [
-            'class_name' => 'UserFrosting\\Sprinkle\\Account\\IdentityProviders\\DatabaseIdp',
+            'class_name' => 'UserFrosting\\Sprinkle\\Account\\IdentityProviders\\DatabaseIdentityProvider',
             'priority'   => 5,
             'type'       => 'primary',         ],
-        'ldap' => [
+        /*    'ldap' => [
             'priority'           => 1,
             'type'               => 'primary',
             'class_name'         => 'UserFrosting\\Sprinkle\\ExampleSprinkle\\Authenticator\\Primary\\LDAPAuthenticator',
@@ -35,7 +35,7 @@ return [
                 'admin_username' => '',
                 'admin_password' => '',
             ],
-        ],
+        ],*/
         'github' => [
             'priority'   => 2,
             'type'       => 'external',

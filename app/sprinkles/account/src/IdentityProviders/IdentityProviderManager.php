@@ -12,8 +12,8 @@ namespace UserFrosting\Sprinkle\Account\IdentityProviders;
 
 use UserFrosting\Sprinkle\Core\Util\ClassMapper;
 use UserFrosting\Support\Repository\Repository as Config;
-use UserFrosting\Sprinkle\Account\Database\Models\Interfaces\PrimaryIdpInterface;
-use UserFrosting\Sprinkle\Account\Database\Models\Interfaces\ExternalIdpInterface;
+use UserFrosting\Sprinkle\Account\Database\Models\Interfaces\PrimaryIdentityProviderInterface;
+use UserFrosting\Sprinkle\Account\Database\Models\Interfaces\ExternalIdentityProviderInterface;
 
 /**
  * Identity Provider manager.
@@ -42,14 +42,15 @@ class IdentityProviderManager
 
     /**
      * Get a primary identity provider object
-     * @param string $slug The slug of the IDP to get
+     * @param string $slug The slug of the Identity Provider to get
      *
-     * @return PrimaryIdpInterface
+     * @return PrimaryIdentityProviderInterface
      */
-    public function getPrimaryIdentityProvider(String $slug): PrimaryIdpInterface
+    public function getPrimaryIdentityProvider(String $slug): PrimaryIdentityProviderInterface
     {
+
         // Attempt to find the IDP
-        $identityProviders = $this->getIdentityProviders()->where('type', 'primary');
+        $identityProviders = $this->getIdentityProviders('primary');
 
         // Get the config
         $config = $identityProviders[$slug];
@@ -77,12 +78,12 @@ class IdentityProviderManager
      * Get an external identity provider object
      * @param string $slug The slug of the IDP to get
      *
-     * @return ExternalIdpInterface
+     * @return ExternalIdentityProviderInterface
      */
-    public function getExternalIdentityProvider(String $slug): ExternalIdpInterface
+    public function getExternalIdentityProvider(String $slug): ExternalIdentityProviderInterface
     {
         // Attempt to find the IDP
-        $identityProviders = $this->getIdentityProviders()->where('type', 'external');
+        $identityProviders = $this->getIdentityProviders('external');
 
         // Get the config
         $config = $identityProviders[$slug];
@@ -109,15 +110,23 @@ class IdentityProviderManager
     /**
      * Returns a collection of Identity Providers configurations sorted by priority.
      *
+     * @param string $type Specific Identity Provider type to get.
+     *
      * @return Collection
      */
-    protected function getIdentityProviders()
+    public function getIdentityProviders($type = 'null')
     {
         $config = $this->config['identity_providers'];
 
-        return collect($config)->map(function ($row) {
+        $collection = collect($config)->map(function ($row) {
             return (object) $row;
         })->sortBy('priority');
+
+        if ($type) {
+            return $collection->where('type', "$type");
+        }
+
+        return $collection;
     }
 
     /**

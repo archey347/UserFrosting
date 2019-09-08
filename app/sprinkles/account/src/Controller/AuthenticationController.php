@@ -73,10 +73,6 @@ class AuthenticationController extends SimpleController
         /** @var \UserFrosting\Support\Repository\Repository $config */
         $config = $this->ci->config;
 
-        $identityProviders = $this->ci->identityProviders;
-
-        Debug::debug(print_r($identityProviders, true));
-
         // Get POST parameters
         $params = $request->getParsedBody();
 
@@ -133,6 +129,12 @@ class AuthenticationController extends SimpleController
         // Try to authenticate the user.  Authenticator will throw an exception on failure.
         /** @var \UserFrosting\Sprinkle\Account\Authenticate\Authenticator $authenticator */
         $authenticator = $this->ci->authenticator;
+
+        $identityProviders = $this->ci->identityProviderManager;
+
+        //      Debug::debug(print_r($identityProviders, true));
+
+        $user = $authenticator->attemptPrimary($userIdentifier, $data['password'], $data['rememberme']);
 
         $currentUser = $authenticator->attempt(($isEmail ? 'email' : 'user_name'), $userIdentifier, $data['password'], $data['rememberme']);
 

@@ -95,7 +95,7 @@ class ServicesProvider
             return $handler;
         });
 
-        $container['identityProviders'] = function ($c) {
+        $container['identityProviderManager'] = function ($c) {
             $config = $c->config;
             $classMapper = $c->classMapper;
 
@@ -176,11 +176,12 @@ class ServicesProvider
             $config = $c->config;
             $session = $c->session;
             $cache = $c->cache;
+            $identityProviderManager = $c->identityProviderManager;
 
             // Force database connection to boot up
             $db = $c->db;
 
-            $authenticator = new Authenticator($classMapper, $session, $config, $cache, $db);
+            $authenticator = new Authenticator($classMapper, $session, $config, $cache, $db, $identityProviderManager);
 
             return $authenticator;
         };
