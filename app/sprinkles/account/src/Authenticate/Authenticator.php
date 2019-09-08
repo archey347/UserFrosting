@@ -134,7 +134,8 @@ class Authenticator
     }
 
     /**
-     * [attemptPrimary description]
+     * Try to authenticate a user using Primary Identity Provider authentication methods.
+     *
      * @param  [type] $identity   [description]
      * @param  [type] $password   [description]
      * @param  bool   $rememberMe [description]
@@ -155,6 +156,8 @@ class Authenticator
             $identityProvider = $identityProviderManager->getPrimaryIdentityProvider($key);
 
             $user = $identityProvider->attempt($identity, $password);
+
+            Debug::debug(print_r($user, true));
         });
 
         if (!$user) {
