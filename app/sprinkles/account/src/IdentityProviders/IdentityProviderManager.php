@@ -53,7 +53,7 @@ class IdentityProviderManager
         $identityProviders = $this->getIdentityProviders()->where("type", "primary");
 
         // Get the config
-        $config = $identityProviders[$slug];
+        $config = $identityProviders->get($slug);
 
         // Fail if not found
         if(!$config) {
@@ -196,5 +196,25 @@ class IdentityProviderManager
             $identityProvider = $this->classMapper->createInstance('identity_provider', ['slug' => $slug]);
             $identityProvider->save();
         }
+    }
+
+    /**
+     * Get external identity provider Slugs in order of priority
+     */
+    public function getPrimaryIdentityProviderSlugList()
+    {
+        $identityProviders = $this->getIdentityProviders()->where('type', 'primary');
+
+        return $identityProviders->keys();
+    }
+
+    /**
+     * Get primary identity provider slugs in order of priority
+     */
+    public function getExternalIdentityProviderSlugList()
+    {
+        $identityProviders = $this->getIdentityProviders()->where('type', 'external');
+
+        return $identityProviders->keys();
     }
 }

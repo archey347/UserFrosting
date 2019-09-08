@@ -52,6 +52,12 @@
         </form>
         {% endblock %}
 
+        {% block socialLogin %}
+        {% for btn in page.external_btns  %}
+          {% include btn %}
+        {% endfor %}
+        {% endblock %}
+
         {% block loginLinks %}
         <a href="{{site.uri.public}}/account/forgot-password">{{translate('PASSWORD.FORGET')}}</a><br>
         {% if site.registration.require_email_verification %}

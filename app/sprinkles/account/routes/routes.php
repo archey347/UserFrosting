@@ -62,4 +62,10 @@ $app->group('/account', function () {
         ->add('authGuard');
 })->add(new NoCache());
 
+$app->group('/auth', function () {
+    $this->group('/primary', function () {
+        $this->get('', 'UserFrosting\Sprinkle\Account\Controller\AuthenticationController:pageSignIn');
+    });
+});
+
 $app->get('/modals/account/tos', 'UserFrosting\Sprinkle\Account\Controller\AccountController:getModalAccountTos');
