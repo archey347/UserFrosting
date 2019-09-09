@@ -10,9 +10,22 @@
 
 use UserFrosting\Sprinkle\Core\Util\NoCache;
 
-$app->group('/account', function () {
-    $this->get('/test', 'UserFrosting\Sprinkle\Account\Controller\AuthenticationController:test');
+$app->group('/account/auth', function () {
+    $this->get('/primary', 'UserFrosting\Sprinkle\Account\Controller\AuthenticationController:pageSignIn')
+    ->add('checkEnvironment');
 
+    $this->post('/primary/login', 'UserFrosting\Sprinkle\Account\Controller\AuthenticationController:login');
+
+    $this->get('/primary/forgot-password', 'UserFrosting\Sprinkle\Account\Controller\AuthenticationController:test');
+
+    $this->get('/external/{auth_slug}/redirect', 'UserFrosting\Sprinkle\Account\Controller\AuthenticationController:test');
+
+    $this->get('/external/{auth_slug}/callback', 'UserFrosting\Sprinkle\Account\Controller\AuthenticationController:test');
+
+    $this->get('/test', 'UserFrosting\Sprinkle\Account\Controller\AuthenticationController:test');
+})->add(new NoCache());
+
+$app->group('/account', function () {
     $this->get('/captcha', 'UserFrosting\Sprinkle\Account\Controller\AccountController:imageCaptcha');
 
     $this->get('/check-username', 'UserFrosting\Sprinkle\Account\Controller\AccountController:checkUsername');

@@ -47,7 +47,7 @@ class AuthenticateStatusCommand extends BaseCommand
 
         Debug::debug(print_r($test, true));
 
-        $test2 = $identityProviders->getPrimaryIdp('ldap');
+        $test2 = $identityProviders->verifyDatabaseIdentityProviders();
 
         Debug::debug(print_r($test2, true));
     }

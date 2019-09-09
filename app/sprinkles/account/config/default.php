@@ -15,7 +15,7 @@ return [
 
     'identity_providers' => [
         'database' => [
-            'class_name' => 'UserFrosting\\Sprinkle\\Account\\IdentityProviders\\DatabaseIdp',
+            'class_name' => 'UserFrosting\\Sprinkle\\Account\\IdentityProviders\\DatabaseIdentityProvider',
             'priority'   => 5,
             'type'       => 'primary',         ],
         
