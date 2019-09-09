@@ -211,7 +211,7 @@ class IdentityProviderManager
      */
     public function getPrimaryIdentityProviderSlugList()
     {
-        $identityProviders = $this->getIdentityProviders()->where('type', 'primary');
+        $identityProviders = $this->getIdentityProviders('primary');
 
         return $identityProviders->keys();
     }
@@ -221,7 +221,7 @@ class IdentityProviderManager
      */
     public function getExternalIdentityProviderSlugList()
     {
-        $identityProviders = $this->getIdentityProviders()->where('type', 'external');
+        $identityProviders = $this->getIdentityProviders('external');
 
         return $identityProviders->keys();
     }

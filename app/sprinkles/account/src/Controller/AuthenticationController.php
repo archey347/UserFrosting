@@ -16,12 +16,8 @@ use UserFrosting\Fortress\Adapter\JqueryValidationAdapter;
 use UserFrosting\Fortress\RequestDataTransformer;
 use UserFrosting\Fortress\RequestSchema;
 use UserFrosting\Fortress\ServerSideValidator;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use UserFrosting\Sprinkle\Core\Controller\SimpleController;
 use UserFrosting\Sprinkle\Core\Facades\Debug;
-use UserFrosting\Fortress\RequestSchema;
-use UserFrosting\Fortress\Adapter\JqueryValidationAdapter;
 
 /**
  * Controller class for /auth/* URLs.  Handles account-related authentication.
@@ -166,33 +162,6 @@ class AuthenticationController extends SimpleController
      * @param Response $response
      * @param array    $args
      */
-    public function pageSignIn(Request $request, Response $response, $args)
-    {
-        /** @var \UserFrosting\Support\Repository\Repository $config */
-        $config = $this->ci->config;
-
-        /** @var \UserFrosting\Sprinkle\Account\Authenticate\Authenticator $authenticator */
-        $authenticator = $this->ci->authenticator;
-
-        // Redirect if user is already logged in
-        if ($authenticator->check()) {
-            $redirect = $this->ci->get('redirect.onAlreadyLoggedIn');
-
-            return $redirect($request, $response, $args);
-        }
-
-        // Load validation rules
-        $schema = new RequestSchema('schema://requests/login.yaml');
-        $validatorLogin = new JqueryValidationAdapter($schema, $this->ci->translator);
-
-        return $this->ci->view->render($response, 'pages/primary-sign-in.html.twig', [
-            'page' => [
-                'validators' => [
-                    'login'    => $validatorLogin->rules('json', false),
-                ],
-            ],
-        ]);
-    }
 
     public function pageSignIn(Request $request, Response $response, $args)
     {
@@ -212,7 +181,7 @@ class AuthenticationController extends SimpleController
         // Load all of the required twig paths for external
         
         /** @var \UserFrosting\Sprinkle\Account\IdentityProviders\IdentityProviderManager $identityProviderManager */
-        $identityProviderManager = $this->ci->identityProviders;
+        $identityProviderManager = $this->ci->identityProviderManager;
 
         $identityProviders = $identityProviderManager->getExternalIdentityProviderSlugList();
 
