@@ -108,6 +108,36 @@ class IdentityProviderManager
     }
 
     /**
+     * Get Identity Providers in configuration files that have a corresponding record in the database.
+     *
+     * @return array
+     */
+    public function getExistingDatabaseIdentityProviders(): array
+    {
+        $collection = $this->getIdentityProviders();
+
+        $exists = [];
+
+        $collection->each(function ($item, $key) use (&$exists) {
+            if ($this->classMapper->staticMethod('identity_provider', 'where', 'slug', "$key")->first()) {
+                $exists[] = $key;
+            }
+        });
+
+        return $exists;
+    }
+
+    /**
+     * Get primary identity provider slugs in order of priority
+     */
+    public function getExternalIdentityProviderSlugList()
+    {
+        $identityProviders = $this->getIdentityProviders('external');
+
+        return $identityProviders->keys();
+    }
+
+    /**
      * Returns a collection of Identity Providers configurations sorted by priority.
      *
      * @param string $type Specific Identity Provider type to get.
@@ -127,6 +157,36 @@ class IdentityProviderManager
         }
 
         return $collection;
+    }
+
+    /**
+     * Get external identity provider Slugs in order of priority
+     */
+    public function getPrimaryIdentityProviderSlugList()
+    {
+        $identityProviders = $this->getIdentityProviders('primary');
+
+        return $identityProviders->keys();
+    }
+
+    /**
+     * Get Identity Providers in configuration files that do not have a corresponding record in the database.
+     *
+     * @return array
+     */
+    public function getMissingDatabaseIdentityProviders(): array
+    {
+        $collection = $this->getIdentityProviders();
+
+        $missing = [];
+
+        $collection->each(function ($item, $key) use (&$missing) {
+            if (!$this->classMapper->staticMethod('identity_provider', 'where', 'slug', "$key")->first()) {
+                $missing[] = $key;
+            }
+        });
+
+        return $missing;
     }
 
     /**
@@ -152,46 +212,6 @@ class IdentityProviderManager
     }
 
     /**
-     * Get Identity Providers in configuration files that do not have a corresponding record in the database.
-     *
-     * @return array
-     */
-    public function getMissingDatabaseIdentityProviders(): array
-    {
-        $collection = $this->getIdentityProviders();
-
-        $missing = [];
-
-        $collection->each(function ($item, $key) use (&$missing) {
-            if (!$this->classMapper->staticMethod('identity_provider', 'where', 'slug', "$key")->first()) {
-                $missing[] = $key;
-            }
-        });
-
-        return $missing;
-    }
-
-    /**
-     * Get Identity Providers in configuration files that have a corresponding record in the database.
-     *
-     * @return array
-     */
-    public function getExistingDatabaseIdentityProviders(): array
-    {
-        $collection = $this->getIdentityProviders();
-
-        $exists = [];
-
-        $collection->each(function ($item, $key) use (&$exists) {
-            if ($this->classMapper->staticMethod('identity_provider', 'where', 'slug', "$key")->first()) {
-                $exists[] = $key;
-            }
-        });
-
-        return $exists;
-    }
-
-    /**
      * Writes Identity Providers configuration to database.
      *
      * @return [type] [description]
@@ -204,25 +224,5 @@ class IdentityProviderManager
             $identityProvider = $this->classMapper->createInstance('identity_provider', ['slug' => $slug]);
             $identityProvider->save();
         }
-    }
-
-    /**
-     * Get external identity provider Slugs in order of priority
-     */
-    public function getPrimaryIdentityProviderSlugList()
-    {
-        $identityProviders = $this->getIdentityProviders('primary');
-
-        return $identityProviders->keys();
-    }
-
-    /**
-     * Get primary identity provider slugs in order of priority
-     */
-    public function getExternalIdentityProviderSlugList()
-    {
-        $identityProviders = $this->getIdentityProviders('external');
-
-        return $identityProviders->keys();
     }
 }
