@@ -10,8 +10,6 @@
 
 namespace UserFrosting\Sprinkle\Account\Authenticate;
 
-use UserFrosting\Sprinkle\Core\Controller\SimpleController;
-
 /**
  * Raw user class
  *
@@ -28,15 +26,15 @@ class RawUser
     /**
      * @var string The type of identity provider this user came from (either primary or external)
      */
-    public $idp_type;
+    public $identityProviderType;
 
     /**
-     * @var integer The id of the identity provider in the database the user came from
+     * @var int The id of the identity provider in the database the user came from
      */
-    public $idp_id;
+    public $identityProviderId;
 
     /**
-     * @var mixed any data about the user which can be used to create a "full" UF user.
+     * @var mixed Any data about the user which can be used to create a "full" UF user.
      */
-    public $meta_data;
+    public $metaData;
 }
